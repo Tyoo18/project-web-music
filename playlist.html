@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Playlist - MusicPlayer</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --accent: #1db954;
+        --bg: #071226;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Poppins", system-ui, Segoe UI, Roboto, Arial;
+        color: #fff;
+        background: var(--bg);
+      }
+      .container {
+        max-width: 1100px;
+        margin: 36px auto;
+        padding: 20px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .title h1 {
+        margin: 0;
+        font-size: 1.6rem;
+      }
+      .back {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .frost {
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 18px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .card {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        padding: 12px;
+        border-radius: 10px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .thumb {
+        width: 64px;
+        height: 64px;
+        border-radius: 8px;
+        background-size: cover;
+        background-position: center;
+        flex-shrink: 0;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+      }
+      .meta {
+        flex: 1;
+      }
+      .meta h3 {
+        margin: 0;
+        font-size: 1rem;
+      }
+      .meta p {
+        margin: 4px 0 0;
+        color: #b6c0c9;
+        font-size: 0.85rem;
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .btn {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      @media (max-width: 520px) {
+        .thumb {
+          width: 52px;
+          height: 52px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <div class="title">
+          <i
+            class="fa-solid fa-list"
+            style="color: var(--accent); font-size: 1.3rem"
+          ></i>
+          <h1>Playlists</h1>
+        </div>
+        <a class="back" href="index.html"
+          ><i class="fa-solid fa-arrow-left" style="margin-right: 8px"></i>Back
+          to Player</a
+        >
+      </div>
+
+      <div class="frost">
+        <p style="margin: 0 0 12px; color: #cfd8dd">
+          Your playlists. Click Play to open the player.
+        </p>
+
+        <div class="grid" id="playlistGrid"></div>
+      </div>
+    </div>
+
+    <script>
+      const playlists = [
+        {
+          id: "favorites",
+          name: "My Favorites",
+          desc: "A collection of my go-to tracks",
+          coverColor: "#ff6b6b",
+        },
+        {
+          id: "chill",
+          name: "Chill Hits",
+          desc: "Relaxed and mellow tunes",
+          coverColor: "#6bafff",
+        },
+        {
+          id: "party",
+          name: "Party Mix",
+          desc: "Upbeat songs for a good time",
+          coverColor: "#ffd36b",
+        },
+        {
+          id: "discover",
+          name: "Discover Weekly",
+          desc: "New finds and recommendations",
+          coverColor: "#9d6bff",
+        },
+      ];
+
+      function generateCoverDataURL(text, size = 128, bg = "#333") {
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = "rgba(255,255,255,0.92)";
+        ctx.font = Math.floor(size * 0.36) + "px Poppins";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const initials = text
+          .split(" ")
+          .slice(0, 2)
+          .map((w) => w[0] || "")
+          .join("")
+          .toUpperCase();
+        ctx.fillText(initials, size / 2, size / 2);
+        return canvas.toDataURL();
+      }
+
+      function render() {
+        const grid = document.getElementById("playlistGrid");
+        playlists.forEach((p) => {
+          const el = document.createElement("div");
+          el.className = "card";
+          el.innerHTML = `
+            <div class="thumb" style="background-image:url('${generateCoverDataURL(
+              p.name,
+              128,
+              p.coverColor
+            )}')"></div>
+            <div class="meta">
+              <h3>${p.name}</h3>
+              <p>${p.desc}</p>
+            </div>
+            <div class="actions">
+              <button class="btn" data-id="${
+                p.id
+              }"><i class="fa-solid fa-play" style="margin-right:8px"></i>Play</button>
+              <button class="btn ghost" onclick="openDetail('${
+                p.id
+              }')">Open</button>
+            </div>
+          `;
+          grid.appendChild(el);
+        });
+
+        document.querySelectorAll(".btn[data-id]").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            const id = btn.getAttribute("data-id");
+            // simple behavior: navigate to player. Could pass a query param to select playlist.
+            window.location.href = "index.html";
+          });
+        });
+      }
+
+      function openDetail(id) {
+        alert("Open playlist: " + id + " (detail page not implemented yet)");
+      }
+
+      render();
+    </script>
+  </body>
+</html>

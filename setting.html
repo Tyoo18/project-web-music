@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Setting - MusicPlayer</title>
+    <link rel="icon" href="favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --accent: #1db954;
+        --bg: #071226;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto,
+          Arial;
+        background: linear-gradient(180deg, #061323 0%, #071226 100%);
+        color: #e6eef6;
+      }
+      .wrap {
+        min-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 20px;
+      }
+      .card {
+        width: 920px;
+        max-width: 100%;
+        background: rgba(6, 10, 16, 0.55);
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+      }
+      .card header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .card header h1 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      .back {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .section {
+        margin-top: 18px;
+        display: grid;
+        gap: 12px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 8px;
+      }
+      .row label {
+        font-weight: 600;
+        color: #dfe9f2;
+      }
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      /* Toggle */
+      .toggle {
+        width: 46px;
+        height: 26px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 20px;
+        position: relative;
+        cursor: pointer;
+      }
+      .toggle input {
+        display: none;
+      }
+      .toggle .knob {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border-radius: 50%;
+        transition: all 180ms cubic-bezier(0.2, 0.9, 0.3, 1);
+      }
+      .toggle.on {
+        background: linear-gradient(90deg, var(--accent), #2fd08a);
+      }
+      .toggle.on .knob {
+        left: 23px;
+      }
+      /* Slider */
+      input[type="range"] {
+        accent-color: var(--accent);
+        width: 220px;
+      }
+      select {
+        background: rgba(0, 0, 0, 0.3);
+        color: #eaf4ff;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        padding: 8px 10px;
+        border-radius: 6px;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+        justify-content: flex-end;
+      }
+      .btn {
+        background: var(--accent);
+        color: #051018;
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: #dfe9f2;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .hint {
+        font-size: 0.9rem;
+        color: #a9b6c6;
+      }
+      @media (max-width: 600px) {
+        .row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .controls {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <section class="card">
+        <header>
+          <div style="display: flex; gap: 12px; align-items: center">
+            <a class="back" href="index.html"
+              ><i class="fa-solid fa-arrow-left"></i
+            ></a>
+            <h1>Settings</h1>
+          </div>
+          <div class="hint">MusicPlayer • Preferences</div>
+        </header>
+
+        <div class="section">
+          <div class="row">
+            <label for="themeToggle">Tema gelap</label>
+            <div class="controls">
+              <div
+                id="themeToggle"
+                class="toggle"
+                role="switch"
+                aria-checked="true"
+              >
+                <input type="checkbox" id="themeToggleInput" />
+                <div class="knob"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <label for="autoplay">Autoplay</label>
+            <div class="controls">
+              <div id="autoplayToggle" class="toggle">
+                <input type="checkbox" id="autoplayInput" />
+                <div class="knob"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <label for="volume">Volume default</label>
+            <div class="controls">
+              <input id="volume" type="range" min="0" max="100" value="80" />
+              <div id="volumeLabel" class="hint">80%</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <label for="artworkSource">Sumber artwork</label>
+            <div class="controls">
+              <select id="artworkSource">
+                <option value="external">Gambar eksternal (folder lagu)</option>
+                <option value="embedded">Embedded ID3 (mp3)</option>
+                <option value="generated">Generated (fallback)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <label for="notifications">Notifikasi</label>
+            <div class="controls">
+              <div id="notifToggle" class="toggle">
+                <input type="checkbox" id="notifInput" />
+                <div class="knob"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="resetBtn" class="btn ghost">Reset</button>
+            <button id="saveBtn" class="btn">Simpan</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // Simple settings persistence using localStorage
+      const defaults = {
+        themeDark: true,
+        autoplay: false,
+        volume: 80,
+        artworkSource: "external",
+        notifications: true,
+      };
+      function loadSettings() {
+        try {
+          const s = JSON.parse(localStorage.getItem("mp.settings") || "{}");
+          return Object.assign({}, defaults, s);
+        } catch (e) {
+          return defaults;
+        }
+      }
+      function saveSettings(obj) {
+        localStorage.setItem("mp.settings", JSON.stringify(obj));
+      }
+
+      const themeToggle = document.getElementById("themeToggle");
+      const themeInput = document.getElementById("themeToggleInput");
+      const autoplayToggle = document.getElementById("autoplayToggle");
+      const autoplayInput = document.getElementById("autoplayInput");
+      const notifToggle = document.getElementById("notifToggle");
+      const notifInput = document.getElementById("notifInput");
+      const volumeInput = document.getElementById("volume");
+      const volumeLabel = document.getElementById("volumeLabel");
+      const artworkSelect = document.getElementById("artworkSource");
+      const saveBtn = document.getElementById("saveBtn");
+      const resetBtn = document.getElementById("resetBtn");
+
+      function setToggle(el, checked) {
+        if (checked) el.classList.add("on");
+        else el.classList.remove("on");
+        el.setAttribute("aria-checked", checked);
+      }
+
+      function applySettings(s) {
+        setToggle(themeToggle, s.themeDark);
+        themeInput.checked = !!s.themeDark;
+        setToggle(autoplayToggle, s.autoplay);
+        autoplayInput.checked = !!s.autoplay;
+        setToggle(notifToggle, s.notifications);
+        notifInput.checked = !!s.notifications;
+        volumeInput.value = s.volume;
+        volumeLabel.textContent = s.volume + "%";
+        artworkSelect.value = s.artworkSource || "external";
+        document.documentElement.style.background = s.themeDark
+          ? "linear-gradient(180deg,#061323 0%, #071226 100%)"
+          : "linear-gradient(180deg,#f7fafc 0%, #e6eef6 100%)";
+      }
+
+      // Wire toggles
+      [themeToggle, autoplayToggle, notifToggle].forEach((t) => {
+        t.addEventListener("click", () => {
+          const cb = t.querySelector("input");
+          cb.checked = !cb.checked;
+          setToggle(t, cb.checked);
+        });
+      });
+      volumeInput.addEventListener("input", () => {
+        volumeLabel.textContent = volumeInput.value + "%";
+      });
+
+      saveBtn.addEventListener("click", () => {
+        const s = {
+          themeDark: !!themeInput.checked,
+          autoplay: !!autoplayInput.checked,
+          volume: Number(volumeInput.value),
+          artworkSource: artworkSelect.value,
+          notifications: !!notifInput.checked,
+        };
+        saveSettings(s);
+        saveBtn.textContent = "Tersimpan ✓";
+        setTimeout(() => (saveBtn.textContent = "Simpan"), 1200);
+      });
+
+      resetBtn.addEventListener("click", () => {
+        localStorage.removeItem("mp.settings");
+        applySettings(defaults);
+        resetBtn.textContent = "Reset ✓";
+        setTimeout(() => (resetBtn.textContent = "Reset"), 1200);
+      });
+
+      // initialize
+      applySettings(loadSettings());
+    </script>
+  </body>
+</html>

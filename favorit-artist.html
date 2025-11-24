@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Favorite Artists - MusicPlayer</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --accent: #1db954;
+        --bg: #071226;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Poppins", system-ui, Segoe UI, Roboto, Arial;
+        color: #fff;
+        background: var(--bg);
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 36px auto;
+        padding: 20px;
+      }
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .title h1 {
+        margin: 0;
+        font-size: 1.6rem;
+      }
+      .back {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .frost {
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 18px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .artist {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 12px;
+        border-radius: 10px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        cursor: default;
+      }
+      .avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+        margin-bottom: 10px;
+      }
+      .artist h4 {
+        margin: 0;
+        font-size: 1rem;
+        text-align: center;
+      }
+      .artist p {
+        margin: 6px 0 0;
+        color: #bfc9d2;
+        font-size: 0.85rem;
+      }
+      .artist .play {
+        margin-top: 10px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      @media (max-width: 520px) {
+        .avatar {
+          width: 72px;
+          height: 72px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <div class="title">
+          <i
+            class="fa-solid fa-user"
+            style="color: var(--accent); font-size: 1.2rem"
+          ></i>
+          <h1>Favorite Artists</h1>
+        </div>
+        <a class="back" href="index.html"
+          ><i class="fa-solid fa-arrow-left" style="margin-right: 8px"></i>Back
+          to Player</a
+        >
+      </div>
+
+      <div class="frost">
+        <p style="margin: 0 0 12px; color: #cfd8dd">
+          Your favorite artists. Click Play to preview top tracks.
+        </p>
+        <div class="grid" id="artistsGrid"></div>
+      </div>
+    </div>
+
+    <script>
+      const artists = [
+        {
+          id: "arctic",
+          name: "Arctic Monkeys",
+          followers: "2.1M",
+          color: "#6b8cff",
+        },
+        {
+          id: "taylor",
+          name: "Taylor Swift",
+          followers: "15.4M",
+          color: "#ff6b6b",
+        },
+        {
+          id: "theweeknd",
+          name: "The Weeknd",
+          followers: "9.8M",
+          color: "#9d6bff",
+        },
+        { id: "radio", name: "Radiohead", followers: "1.9M", color: "#6bffb0" },
+        {
+          id: "billie",
+          name: "Billie Eilish",
+          followers: "6.2M",
+          color: "#ffd36b",
+        },
+        { id: "dua", name: "Dua Lipa", followers: "4.0M", color: "#ff9db6" },
+      ];
+
+      function generateAvatar(text, size = 128, bg = "#444") {
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = "#fff";
+        ctx.font = Math.floor(size * 0.36) + "px Poppins";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const initials = text
+          .split(" ")
+          .slice(0, 2)
+          .map((w) => w[0] || "")
+          .join("")
+          .toUpperCase();
+        ctx.fillText(initials, size / 2, size / 2);
+        return canvas.toDataURL();
+      }
+
+      function render() {
+        const grid = document.getElementById("artistsGrid");
+        artists.forEach((a) => {
+          const el = document.createElement("div");
+          el.className = "artist";
+          const avatar = generateAvatar(a.name, 128, a.color);
+          el.innerHTML = `
+            <div class="avatar" style="background-image:url('${avatar}')"></div>
+            <h4>${a.name}</h4>
+            <p>${a.followers} followers</p>
+            <button class="play" data-id="${a.id}"><i class="fa-solid fa-play" style="margin-right:8px"></i>Play</button>
+          `;
+          grid.appendChild(el);
+        });
+
+        document.querySelectorAll(".play").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            const id = btn.getAttribute("data-id");
+            // Simple behavior: navigate to player. Could pass ?artist=id for real filtering.
+            window.location.href = "index.html";
+          });
+        });
+      }
+
+      render();
+    </script>
+  </body>
+</html>

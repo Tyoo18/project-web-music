@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Library - MusicPlayer</title>
+    <link rel="icon" href="record.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #071226;
+        --panel: rgba(255, 255, 255, 0.04);
+        --accent: #1db954;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto,
+          Arial;
+        color: #fff;
+        background: linear-gradient(180deg, #071226, #0f1724);
+      }
+      .container {
+        max-width: 1100px;
+        margin: 32px auto;
+        padding: 24px;
+        border-radius: 12px;
+        background: var(--panel);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo i {
+        font-size: 28px;
+        color: var(--accent);
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.4rem;
+      }
+      .search {
+        margin-left: auto;
+      }
+      .search input {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        padding: 8px 12px;
+        border-radius: 8px;
+        color: #fff;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 18px;
+        margin-top: 20px;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 10px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        text-align: center;
+      }
+      .thumb {
+        width: 140px;
+        height: 140px;
+        border-radius: 8px;
+        background: #222;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .title {
+        font-weight: 600;
+      }
+      .artist {
+        color: #9aa8b9;
+        font-size: 0.9rem;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .actions button {
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.1rem;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 6px;
+      }
+      .actions button.play {
+        background: var(--accent);
+        color: #071226;
+        padding: 6px 10px;
+      }
+      .actions button i {
+        pointer-events: none;
+      }
+      .empty {
+        opacity: 0.6;
+        text-align: center;
+        padding: 32px;
+      }
+      @media (max-width: 640px) {
+        .thumb {
+          width: 120px;
+          height: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">
+          <i class="fa-solid fa-headphones"></i>
+          <div>
+            <h1>Library</h1>
+            <div style="color: #9aa8b9; font-size: 0.9rem">
+              Your local tracks
+            </div>
+          </div>
+        </div>
+        <div class="search">
+          <input id="q" placeholder="Search tracks or artist" />
+        </div>
+      </div>
+
+      <div id="tracks" class="grid" aria-live="polite"></div>
+
+      <div style="margin-top: 18px; text-align: right">
+        <a href="index.html" style="color: var(--accent); text-decoration: none"
+          >← Back to Player</a
+        >
+      </div>
+    </div>
+
+    <script>
+      // sample track list (adjust paths if your songs live elsewhere)
+      const tracks = [
+        {
+          src: "../music player/song/505.mp3",
+          title: "505",
+          artist: "Arctic Monkeys",
+        },
+        {
+          src: "../music player/song/No. 1 Party Anthem.mp3",
+          title: "No. 1 Party Anthem",
+          artist: "Unknown",
+        },
+      ];
+
+      const container = document.getElementById("tracks");
+      const q = document.getElementById("q");
+
+      function generateCover(title, size = 400) {
+        const c = document.createElement("canvas");
+        c.width = size;
+        c.height = size;
+        const ctx = c.getContext("2d");
+        let hash = 0;
+        for (let i = 0; i < title.length; i++)
+          hash = title.charCodeAt(i) + ((hash << 5) - hash);
+        const hue = Math.abs(hash) % 360;
+        ctx.fillStyle = `hsl(${hue} 60% 35%)`;
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = `bold ${Math.floor(size * 0.14)}px sans-serif`;
+        const words = title.split(/\s+/).filter(Boolean);
+        let initials = "";
+        if (words.length === 1) initials = words[0].slice(0, 2).toUpperCase();
+        else
+          initials = (
+            words[0][0] + (words[1] ? words[1][0] : "")
+          ).toUpperCase();
+        ctx.fillText(initials, size / 2, size / 2 - 10);
+        ctx.font = `${Math.floor(size * 0.06)}px sans-serif`;
+        ctx.fillText(
+          title.length > 20 ? title.slice(0, 18) + "..." : title,
+          size / 2,
+          size * 0.82
+        );
+        const img = new Image();
+        img.src = c.toDataURL();
+        return img.src;
+      }
+
+      function tryExternalCover(src, title) {
+        return new Promise((resolve) => {
+          try {
+            const parts = src.split("/");
+            const fname = parts.pop();
+            const dir = parts.join("/") || ".";
+            const base = fname.replace(/\.[^/.]+$/, "");
+            const candidates = [
+              `${dir}/${base}.jpg`,
+              `${dir}/${base}.png`,
+              `${dir}/cover.jpg`,
+              `${dir}/cover.png`,
+            ];
+            let i = 0;
+            function next() {
+              if (i >= candidates.length) return resolve(null);
+              const url = candidates[i++];
+              const img = new Image();
+              img.onload = () => resolve(url);
+              img.onerror = () => setTimeout(next, 0);
+              img.src = url;
+            }
+            next();
+          } catch (e) {
+            resolve(null);
+          }
+        });
+      }
+
+      async function render(list) {
+        container.innerHTML = "";
+        if (list.length === 0) {
+          container.innerHTML = '<div class="empty">No tracks found</div>';
+          return;
+        }
+        for (const t of list) {
+          const card = document.createElement("div");
+          card.className = "card";
+          const thumb = document.createElement("div");
+          thumb.className = "thumb";
+          const imgEl = document.createElement("img");
+          const ext = await tryExternalCover(t.src, t.title);
+          if (ext) {
+            imgEl.src = ext;
+          } else {
+            imgEl.src = generateCover(t.title);
+          }
+          thumb.appendChild(imgEl);
+          const title = document.createElement("div");
+          title.className = "title";
+          title.textContent = t.title;
+          const artist = document.createElement("div");
+          artist.className = "artist";
+          artist.textContent = t.artist || "Unknown";
+          const actions = document.createElement("div");
+          actions.className = "actions";
+          const play = document.createElement("button");
+          play.className = "play";
+          play.innerHTML = '<i class="fa-solid fa-play"></i>';
+          play.addEventListener("click", () => {
+            location.href = "index.html";
+            setTimeout(() => {
+              /* user can press play there */
+            }, 200);
+          });
+          const more = document.createElement("button");
+          more.innerHTML = '<i class="fa-solid fa-ellipsis"></i>';
+          actions.appendChild(play);
+          actions.appendChild(more);
+          card.appendChild(thumb);
+          card.appendChild(title);
+          card.appendChild(artist);
+          card.appendChild(actions);
+          container.appendChild(card);
+        }
+      }
+
+      // initial render
+      render(tracks);
+
+      q.addEventListener("input", () => {
+        const v = q.value.trim().toLowerCase();
+        const filtered = tracks.filter(
+          (t) =>
+            t.title.toLowerCase().includes(v) ||
+            (t.artist || "").toLowerCase().includes(v)
+        );
+        render(filtered);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Download - MusicPlayer</title>
+    <link rel="icon" href="favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --accent: #1db954;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto,
+          Arial;
+        background: linear-gradient(180deg, #061323 0%, #071226 100%);
+        color: #e6eef6;
+      }
+      .wrap {
+        min-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 20px;
+      }
+      .card {
+        width: 920px;
+        max-width: 100%;
+        background: rgba(6, 10, 16, 0.55);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+      }
+      .card header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .card header h1 {
+        margin: 0;
+        font-size: 1.3rem;
+      }
+      .hint {
+        color: #9fb0c6;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .item {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 12px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .cover {
+        width: 100%;
+        aspect-ratio: 1;
+        background: #0c1720;
+        border-radius: 8px;
+        background-size: cover;
+        background-position: center;
+      }
+      .meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .meta .title {
+        font-weight: 600;
+      }
+      .meta .size {
+        font-size: 0.85rem;
+        color: #9fb0c6;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: #052017;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: #dfe9f2;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .btn[disabled] {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .empty {
+        padding: 28px;
+        text-align: center;
+        color: #9fb0c6;
+      }
+      .controls-top {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .search {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        background: transparent;
+        color: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <section class="card">
+        <header>
+          <div style="display: flex; gap: 12px; align-items: center">
+            <a
+              href="index.html"
+              class="hint"
+              style="text-decoration: none; color: var(--accent)"
+              ><i class="fa-solid fa-arrow-left"></i
+            ></a>
+            <h1>Download</h1>
+          </div>
+          <div class="controls-top">
+            <input id="search" class="search" placeholder="Cari nama file..." />
+            <div class="hint">Server-required untuk cek file availability</div>
+          </div>
+        </header>
+
+        <div id="list" class="grid" aria-live="polite">
+          <div class="empty">
+            Memeriksa file... jika kosong, edit daftar di kode
+            <code>download.html</code> atau jalankan server dengan file di
+            folder.
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // Editable list of downloadable files relative to this folder.
+      const files = [
+        { name: "song1.mp3", cover: "artic_monkey.jpg" },
+        { name: "song2.mp3", cover: "cover2.jpg" },
+        { name: "song3.mp3", cover: "szaaaaaaaaaaa.jpeg" },
+      ];
+
+      const listEl = document.getElementById("list");
+      const searchEl = document.getElementById("search");
+
+      function humanSize(bytes) {
+        if (!bytes) return "";
+        const units = ["B", "KB", "MB", "GB"];
+        let i = 0;
+        while (bytes > 1024 && i < units.length - 1) {
+          bytes /= 1024;
+          i++;
+        }
+        return Math.round(bytes * 10) / 10 + units[i];
+      }
+
+      async function checkFile(url) {
+        try {
+          const resp = await fetch(url, { method: "HEAD" });
+          return resp.ok;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      async function build() {
+        listEl.innerHTML = "";
+        const q = searchEl.value.trim().toLowerCase();
+        const filtered = files.filter((f) => f.name.toLowerCase().includes(q));
+        if (filtered.length === 0) {
+          listEl.innerHTML =
+            '<div class="empty">Tidak ada file (coba ubah daftar `files` di script atau hapus filter pencarian).</div>';
+          return;
+        }
+
+        for (const f of filtered) {
+          const item = document.createElement("div");
+          item.className = "item";
+          const cover = document.createElement("div");
+          cover.className = "cover";
+          cover.style.backgroundImage = `url(${f.cover})`;
+          const meta = document.createElement("div");
+          meta.className = "meta";
+          const title = document.createElement("div");
+          title.className = "title";
+          title.textContent = f.name;
+          const size = document.createElement("div");
+          size.className = "size";
+          size.textContent = "";
+          meta.appendChild(title);
+          meta.appendChild(size);
+          const actions = document.createElement("div");
+          actions.className = "actions";
+          const dl = document.createElement("a");
+          dl.className = "btn primary";
+          dl.textContent = "Download";
+          dl.setAttribute("download", "");
+          dl.href = f.name;
+          const openBtn = document.createElement("a");
+          openBtn.className = "btn ghost";
+          openBtn.textContent = "Buka";
+          openBtn.href = f.name;
+          openBtn.target = "_blank";
+          actions.appendChild(dl);
+          actions.appendChild(openBtn);
+          item.appendChild(cover);
+          item.appendChild(meta);
+          item.appendChild(actions);
+          listEl.appendChild(item);
+
+          // check availability via HEAD; disable if not found
+          const available = await checkFile(f.name);
+          if (!available) {
+            dl.setAttribute("disabled", "");
+            openBtn.setAttribute("disabled", "");
+            size.textContent = "Tidak tersedia di server";
+          } else {
+            // try to fetch size with HEAD
+            try {
+              const r = await fetch(f.name, { method: "HEAD" });
+              const len = r.headers.get("content-length");
+              size.textContent = len ? humanSize(Number(len)) : "";
+            } catch (e) {}
+          }
+        }
+      }
+
+      searchEl.addEventListener("input", () => build());
+
+      // initialize
+      build();
+    </script>
+  </body>
+</html>

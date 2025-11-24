@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="main.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.svg" >
+    <link rel="stylesheet" href="styles.css" />
+    <title>music player</title>
+  </head>
+  <body>
+    <div id="background">
+      <div class="frosted">
+        <div class="record-set">
+          <div id="vinyl"><div id="v-cover"></div></div>
+          <div id="arm"></div>
+        </div>
+        <div id="control-trigger"></div>
+        <nav id="control" class="control">
+          <div class="btn">
+            <button id="prev" class="fa-solid fa-step-backward"></button>
+            <button id="plps" class="fa-solid fa-play"></button>
+            <button id="next" class="fa-solid fa-step-forward"></button>
+          </div>
+          <div class="duration">
+            <progress value="70" max="100"></progress>
+          </div>
+        </nav>
+        <div class="menu-trigger" id="hoverTrigger"></div>
+        <aside class="menu" id="myMenu">
+          <div id="menu-header"><i class="fa-solid fa-headphones"></i> MusicPlayer</div>
+          <h3>more</h3>
+          <ul>
+            <li>
+              <a href="index.html"><i class="fa-solid fa-home"></i> Home </a>
+            </li>
+            <li>
+              <a href="search.html"><i class="fa-solid fa-search"></i> Search </a>
+            </li>
+            <li>
+              <a href="library.html"><i class="fa-solid fa-book"></i> Library </a>
+            </li>
+          </ul>
+          <hr />
+          <h3>Koleksi</h3>
+          <ul>
+            <li>
+              <a href="playlist.html"><i class="fa-solid fa-list"></i> Playlist </a>
+            </li>
+            <li>
+              <a href="album.html"><i class="fa-solid fa-compact-disc"></i> Album </a>
+            </li>
+            <li>
+              <a href="favorit-artist.html"><i class="fa-solid fa-star"></i> Favorit Artist </a>
+            </li>
+          </ul>
+          <hr />
+          <h3>Other</h3>
+          <ul>
+            <li>
+              <a href="download.html"><i class="fa-solid fa-download"></i> Download </a>
+            </li>
+            <li>
+              <a href="setting.html"><i class="fa-solid fa-cog"></i> Setting </a>
+            </li>
+          </ul>
+        </aside>
+        </div>
+      </div>
+    </div>
+    <div class="expand" id="expand"><i class="fa-solid fa-expand"></i></div>
+  </body>
+</html>
